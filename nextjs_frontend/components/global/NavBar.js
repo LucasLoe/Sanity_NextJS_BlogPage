@@ -10,7 +10,7 @@ export default function NavBar() {
             <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
                 <div>
                     <div className="flex h-16 items-center justify-between py-3 md:py-5 md:block">
-                        <a href="javascript:void(0)">
+                        <a href="">
                             <h2 className="text-2xl font-bold"></h2>
                         </a>
                         <div className="md:hidden">
@@ -59,16 +59,16 @@ export default function NavBar() {
                     >
                         <ul className="items-center justify-center space-y-8 md:flex md:space-x-12 md:space-y-0">
                             <li className="text-white hover:underline font-bold">
-                                <a href="javascript:void(0)">Home</a>
+                                <a href="">Home</a>
                             </li>
                             <li className="text-white hover:underline font-bold">
-                                <a href="javascript:void(0)">Blog</a>
+                                <a href="">Blog</a>
                             </li>
                             <li className="text-white hover:underline font-bold">
-                                <a href="javascript:void(0)">About US</a>
+                                <a href="">About US</a>
                             </li>
                             <li className="text-white hover:underline font-bold">
-                                <a href="javascript:void(0)">Contact US</a>
+                                <a href="">Contact US</a>
                             </li>
                         </ul>
                     </div>

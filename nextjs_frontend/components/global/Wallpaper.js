@@ -7,6 +7,7 @@ export default function Wallpaper() {
         alt="Picture of the author"
         width={1500}
         height={1500}
+        priority
     />
   )
 }

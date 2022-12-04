@@ -1,0 +1,18 @@
+export default function importComponentFromKeyword(keyword, props) {
+    switch (keyword) {
+        case "imageGallery":
+            return 
+            break;
+        case "headerImage":
+            return 
+            break;
+        case "body":
+            return 
+            break;
+        case "imageGallery":
+            return 
+            break;
+        default:
+            break;
+    }
+}
