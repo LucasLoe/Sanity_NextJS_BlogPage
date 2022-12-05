@@ -1,7 +1,6 @@
-import Head from 'next/head'
-import Header from '../components/global/Header'
-import Carousel from '../components/global/ImageSlider-v2/ImageSlider'
-
+import Head from "next/head";
+import Header from "../components/global/Header";
+import Carousel from "../components/global/ImageSlider-v2/Carousel";
 
 export default function Home() {
   return (
@@ -12,18 +11,15 @@ export default function Home() {
       </Head>
       <Header />
 
-      <main className='max-w-7xl bg-slate-300 mx-auto'>
-        <h1>
-          Hi, I am a template for NextJS.
-        </h1>
-      </main>
-      <div className="w-screen h-80 flex justify-center border-4">
+      <div className="flex justify-center">
         <Carousel />
-       </div>
+      </div>
 
-      <footer>
+      <main className="max-w-7xl bg-slate-300 mx-auto">
+        <h1>Hi, I am a template for NextJS.</h1>
+      </main>
 
-      </footer>
+      <footer></footer>
     </div>
-  )
+  );
 }
