@@ -25,7 +25,7 @@ export default function Home() {
       </div>
       
       <div className="flex justify-center">
-        <PostSlider />
+        <PostSlider showPageNumber={true} />
       </div>
 
       <main className="max-w-7xl bg-slate-300 mx-auto">
