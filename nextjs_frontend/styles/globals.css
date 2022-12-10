@@ -6,6 +6,7 @@
 
     html {
         @apply bg-white;
+        -webkit-tap-highlight-color: transparent;
     }
 
     h1 {
@@ -24,7 +25,26 @@
     article {
         @apply bg-white w-full max-w-7xl min-h-[72vh] mx-8 my-8 px-8 text-center z-10 rounded-xl shadow-2xl
     }
-
-    
-
 }
+
+@layer utilities {
+
+    .scrollbar::-webkit-scrollbar {
+      width: 20px;
+      height: 10px;
+    }
+  
+    .scrollbar::-webkit-scrollbar-track {
+      border-radius: 5px;
+      background: #eff6ff;
+    }
+  
+    .scrollbar::-webkit-scrollbar-thumb {
+      background: #bfdbfe;
+      border-radius: 5px;
+    }
+  
+    .scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #60a5fa;
+    }
+  }

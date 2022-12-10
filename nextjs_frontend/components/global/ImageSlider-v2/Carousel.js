@@ -1,12 +1,19 @@
 import { useState, useRef, createRef } from "react";
-import { BsCaretLeft, BsCaretRight, BsDiamond, BsDiamondFill } from "react-icons/bs";
+import {
+  BsCaretLeft,
+  BsCaretRight,
+  BsDiamond,
+  BsDiamondFill,
+} from "react-icons/bs";
 
-export default function Carousel({width='half', images}) {
+export default function Carousel({ width = "half", images }) {
   const [currentImage, setCurrentImage] = useState(0);
-  const refs = images && images.reduce((acc, val, i) => {
-    acc[i] = createRef();
-    return acc;
-  }, {});
+  const refs =
+    images &&
+    images.reduce((acc, val, i) => {
+      acc[i] = createRef();
+      return acc;
+    }, {});
 
   // console.log(images)
 
@@ -41,8 +48,9 @@ export default function Carousel({width='half', images}) {
     <button
       type="button"
       onClick={isLeft ? previousImage : nextImage}
-      className={`absolute text-white z-10 h-15 w-15 flex items-center justify-center bottom-0 top-0 ${isLeft ? "left-2" : "right-2"
-        }`}
+      className={`absolute text-white z-10 h-15 w-15 flex items-center justify-center bottom-0 top-0 ${
+        isLeft ? "left-2" : "right-2"
+      }`}
     >
       <span role="img" aria-label={`Arrow ${isLeft ? "left" : "right"}`}>
         {isLeft ? (
@@ -58,26 +66,37 @@ export default function Carousel({width='half', images}) {
     <div className="flex justify-center w-screen md:w-1/2 items-center">
       <div className="relative w-full ">
         <div className="carousel inline-flex overflow-hidden snap-x snap-mandatory">
-          {images && images.map((img, i) => (
-            <div className="w-full flex-shrink-0 h-full" key={img} ref={refs[i]}>
-              <img src={img} className=" object-cover" />
-            </div>
-          ))}
+          {images &&
+            images.map((img, i) => (
+              <div
+                className="w-full flex-shrink-0 h-full"
+                key={img}
+                ref={refs[i]}
+              >
+                <img src={img} className=" object-cover" />
+              </div>
+            ))}
           {sliderControl(true)}
           {sliderControl(false)}
           <div className=" absolute bottom-0 flex justify-center left-0 right-0">
-            {
-              images && images.map((img, i) => (
-                (i === currentImage) ?
-                  <button key={'button-' + img.toString()} onClick={() => scrollToImage(i)}>
-                    <BsDiamondFill  className="width-4 height-4 text-white opacity-70 z-10 mx-2 mb-4 hover:text-blue-100 scale-[1.3]" />
+            {images &&
+              images.map((img, i) =>
+                i === currentImage ? (
+                  <button
+                    key={"button-" + img.toString()}
+                    onClick={() => scrollToImage(i)}
+                  >
+                    <BsDiamondFill className="width-4 height-4 text-white opacity-70 z-10 mx-2 mb-4 hover:text-blue-100 scale-[1.3]" />
                   </button>
-                  :
-                  <button key={'button-' + img.toString()} onClick={() => scrollToImage(i)}>
+                ) : (
+                  <button
+                    key={"button-" + img.toString()}
+                    onClick={() => scrollToImage(i)}
+                  >
                     <BsDiamond className="width-4 height-4 text-white opacity-70 z-10 mx-2 mb-4 hover:text-blue-100 transition ease-in-out hover:scale-[1.3] duration-100" />
                   </button>
-              ))
-            }
+                )
+              )}
           </div>
         </div>
       </div>

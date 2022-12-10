@@ -23,30 +23,6 @@ function catMap(category) {
   return catString;
 }
 
-const ptComponents = {
-  types: {
-    image: ({ value }) => {
-      if (!value?.asset?._ref) {
-        return null;
-      }
-      return (
-        <>
-          <img
-            className="mx-auto my-12 w-1/2"
-            alt={value.alt || " "}
-            loading="lazy"
-            src={urlFor(value)
-              .width(1600)
-              .height(900)
-              .fit("max")
-              .auto("format")}
-          />
-        </>
-      );
-    },
-  },
-};
-
 const Post = ({ category }) => {
   const router = useRouter(); //is here, because I dont know how else to access the slug in that specific code block; probably (definitely) more elegant ways exist
 

@@ -1,58 +1,55 @@
-import { useState, useRef, createRef, useEffect } from "react";
+import { useState, useRef, createRef, useEffect, useLayoutEffect } from "react";
 import {
   BsCaretLeft,
   BsCaretRight,
   BsDiamond,
   BsDiamondFill,
 } from "react-icons/bs";
+import client from "../../../client";
+import imageUrlBuilder from "@sanity/image-url";
+import { toPlainText } from "../../../functions/ToPlainText";
+import { addRequestMeta } from "next/dist/server/request-meta";
 
-let p1 = {
-  postImage:
-    "https://images.unsplash.com/photo-1442499470257-b9d4da617f83?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
-  author: "Lucas",
-  title: "This is a catchy title",
-  body: "a lot of body stuff is going here.. maybe about 50 words or even more",
-  date: "21/12/2022",
-  categories: ["cat-1", "cat-2"],
-};
+function urlFor(source) {
+  return imageUrlBuilder(client).image(source);
+}
 
-//console.log(`viewport width: ${document.documentElement.clientWidth}`)
-
-let posts = [
-  [p1],
-  [p1],
-  [p1],
-  [p1],
-  [p1],
-  [p1],
-  [p1],
-  [p1],
-  [p1],
-  [p1],
-  [p1],
-  [p1],
-];
-
-export default function PostSlider({ showPageNumber }) {
+export default function PostSlider({
+  showPageNumber,
+  colorHex = "#3b82f6",
+  pageData,
+}) {
   const [currentPage, setCurrentPage] = useState(0);
   const [numPerPage, setNumPerPage] = useState(3);
-  const [touchPosition, setTouchPosition] = useState(null);
+  const touchPos = useRef(null);
 
-  useEffect(() => {
-    window.addEventListener("resize", () => {
-      let tempNumPerPage =
-        Math.floor(window.innerWidth / 400) == 0
-          ? 1
-          : Math.floor(window.innerWidth / 400);
-      setNumPerPage(tempNumPerPage);
-    });
-  }, []);
+  const mainColor = `[${colorHex}]`;
+
+  // calculate number of posts per slider page based on window width -- needs to be called once due to SSR of NextJS
+  if (typeof window !== "undefined") {
+    useEffect(() => {
+      function handleResize() {
+        let tempNumPerPage =
+          window.innerWidth > 1280
+            ? 3
+            : Math.floor(window.innerWidth / 420) == 0
+            ? 1
+            : Math.floor(window.innerWidth / 420);
+        setNumPerPage(tempNumPerPage);
+      }
+
+      window.addEventListener("resize", handleResize);
+      handleResize();
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+  }
 
   const pageArr =
-    posts &&
-    posts.reduce((arr, p, i) => {
+    pageData &&
+    pageData.reduce((arr, p, i) => {
       const chunk = Math.floor(i / numPerPage);
       arr[chunk] = [].concat(arr[chunk] || [], p);
+
       return arr;
     }, []);
 
@@ -65,11 +62,9 @@ export default function PostSlider({ showPageNumber }) {
 
   const scrollToPage = (i) => {
     setCurrentPage(i);
-    setTouchPosition(null);
+
     refs[i].current.scrollIntoView({
-      behavior: "smooth",
       block: "nearest",
-      inline: "start",
     });
   };
 
@@ -77,7 +72,7 @@ export default function PostSlider({ showPageNumber }) {
 
   const nextPage = () => {
     if (currentPage >= numOfPages - 1) {
-      scrollToPage(0);
+      return;
     } else {
       scrollToPage(currentPage + 1);
     }
@@ -85,7 +80,7 @@ export default function PostSlider({ showPageNumber }) {
 
   const previousPage = () => {
     if (currentPage === 0) {
-      scrollToPage(numOfPages - 1);
+      return;
     } else {
       scrollToPage(currentPage - 1);
     }
@@ -95,7 +90,7 @@ export default function PostSlider({ showPageNumber }) {
     <button
       type="button"
       onClick={isLeft ? previousPage : nextPage}
-      className={`absolute text-gray z-10 h-15 w-15 flex items-center justify-center bottom-0 top-0 ${
+      className={`absolute text-blue-300 z-10 h-15 w-15 flex items-center justify-center bottom-0 top-0 ${
         isLeft ? "left-2" : "right-2"
       }`}
     >
@@ -111,11 +106,11 @@ export default function PostSlider({ showPageNumber }) {
 
   const handleTouchStart = (e) => {
     const touchDown = e.touches[0].clientX;
-    setTouchPosition(touchDown);
+    touchPos.current = touchDown;
   };
 
   const handleTouchMove = (e) => {
-    const touchDown = touchPosition;
+    const touchDown = touchPos.current;
 
     if (touchDown === null) {
       return;
@@ -124,37 +119,39 @@ export default function PostSlider({ showPageNumber }) {
     const currentTouch = e.touches[0].clientX;
     const diff = touchDown - currentTouch;
 
-    if (diff > 5) {
+    if (diff > 7) {
       nextPage();
     }
 
-    if (diff < -5) {
+    if (diff < -7) {
       previousPage();
     }
+
+    touchPos.current = null;
   };
 
   return (
-    <div className="flex justify-center w-screen md:w-3/4 items-center bg-white">
+    <div className="flex justify-center w-full items-center bg-transparent">
       <div className="relative w-full pb-8">
         <div
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
-          className="w-full inline-flex overflow-hidden snap-x snap-mandatory"
+          className="w-full inline-flex overflow-x-scroll snap-x snap-mandatory scroll-smooth scrollbar"
         >
           {pageArr &&
             pageArr.map((postChunk, i) => (
               <div
-                className="w-full h-full flex-shrink-0 flex px-8 py-4"
+                className="w-full h-full flex-shrink-0 flex px-8 py-4 snap-center snap-always justify-start"
                 key={"postChunk" + i}
                 ref={refs[i]}
               >
                 {postChunk &&
                   postChunk.map((post, k) => (
-                    <div className="h-full w-auto bg-white mx-8 shadow-xl flex flex-col text-center px-4 py-4">
+                    <div className="h-auto w-full md:w-[300px] bg-white shadow-xl flex flex-col text-center px-4 py-4 mx-auto">
                       <div className="" key={"post-image" + k + i}>
                         <img
                           className="object-cover mx-auto"
-                          src={post.postImage}
+                          src={urlFor(post.mainImage)}
                         />
                       </div>
                       <h3
@@ -164,26 +161,25 @@ export default function PostSlider({ showPageNumber }) {
                         {post.title}
                       </h3>
                       <p className="text-sm" key={"post-author" + k + i}>
-                        {"by " + post.author}
+                        {"by " + post.name}
                       </p>
-                      <p className="my-2" key={"post-body" + k + i}>
-                        {post.body}
+                      <p className="my-2 mb-6" key={"post-body" + k + i}>
+                        {toPlainText(post.body, 25)}
                       </p>
-                      <button className="mb-6 mt-2 transition ease-in-out hover:scale-[1.1] active:scale-[1.1] duration-200 text-sm bg-transparent my-auto hover:bg-blue-500 text-blue-700 font-semibold w-32 mx-auto hover:text-white py-2 px-4 border-2 border-blue-500 hover:border-transparent rounded">
+
+                      <button className="mb-6 mt-auto transition ease-in-out hover:scale-[1.1] active:scale-[1.1] duration-200 text-sm bg-transparent my-auto hover:bg-blue-500 text-blue-700 font-semibold w-32 mx-auto hover:text-white py-2 px-4 border-2 border-blue-500 hover:border-transparent rounded">
                         Read More...
                       </button>
-                      <div
-                        id="meta"
-                        className="flex justify-between italic mb-0 mt-auto"
-                      >
+
+                      <div id="meta" className="flex justify-between italic">
                         <p className="text-sm" key={"post-date" + k + i}>
-                          {post.date}
+                          {post.publishedAt.slice(0, 10)}
                         </p>
                         <div className="flex">
                           {post.categories &&
                             post.categories.map((cat, j) => (
                               <p
-                                className="text-sm mx-1 text-blue-500 font-semibold"
+                                className="text-sm mx-1 text-blue-500 font-semibold hover:cursor-pointer hover:underline transition ease-in-out hover:scale-[1.05] "
                                 key={"post-categories" + post.title + j}
                               >
                                 {cat}
@@ -204,7 +200,7 @@ export default function PostSlider({ showPageNumber }) {
           {sliderControl(false)}
           <div className=" absolute bottom-0 flex justify-center left-0 right-0">
             {showPageNumber ? (
-              <p className="font-semibold text-lg">{`${
+              <p className="font-semibold text-xl text-blue-500">{`${
                 currentPage + 1
               }/${numOfPages}`}</p>
             ) : (
