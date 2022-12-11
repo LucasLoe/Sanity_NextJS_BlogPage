@@ -11,15 +11,25 @@ function urlFor(source) {
   return imageUrlBuilder(client).image(source);
 }
 
-const Post = ({ pageCategory }) => {
+const Page = ({ pageCategory }) => {
+  const {
+    title = "missing title",
+    body = [],
+  } = pageCategory;
 
-  let imgSliderArr = []
+  let imgSliderArr = [];
 
-  if (pageCategory.imageGallery) {
-    pageCategory.imageGallery[0].map((i) => imgSliderArr.push(urlFor(i.asset._ref)))
+  if (
+    (pageCategory.imageGallery[0] != []) &
+    (pageCategory.imageGallery[0] != "undefined")
+  ) {
+    console.log(pageCategory.imageGallery);
+    pageCategory.imageGallery[0].map((i) =>
+      imgSliderArr.push(urlFor(i.asset._ref))
+    );
   }
 
-  console.log(imgSliderArr)
+  console.log(imgSliderArr);
 
   const ptComponents = {
     types: {
@@ -48,17 +58,22 @@ const Post = ({ pageCategory }) => {
   return (
     <>
       <Header />
-
       <section className="flex justify-center z-0 top-64 h-auto m-auto bg-fixed bg-cover bg-parallax text-center">
         <article>
-          {pageCategory.headerImage &&
+          {pageCategory.headerImage && (
             <img
               className="w-full h-64 rounded-lg object-cover my-8"
               srcSet={urlFor(pageCategory.headerImage.asset._ref)}
-            />}
-          {pageCategory.body && <PortableText value={pageCategory.body} components={ptComponents} />}
-          {imgSliderArr && <div className="mx-auto w-full md:w-3/4 flex justify-center my-8 h-[500px] rounded"><Carousel images={imgSliderArr} /></div>}
-
+            />
+          )}
+          {pageCategory.body && (
+            <PortableText value={pageCategory.body} components={ptComponents} />
+          )}
+          {
+            <div className="mx-auto w-full md:w-3/4 flex justify-center my-8 h-[500px] shadow-lg">
+              <Carousel images={imgSliderArr} />
+            </div>
+          }
         </article>
       </section>
     </>
@@ -71,7 +86,7 @@ const query = groq`*[_type == "pageContent" && $slug in pageCategory[]->slug.cur
   headerImage,
   body,
   "imageGallery": imageGallery[]->images
-}`
+}`;
 
 export async function getStaticPaths() {
   const paths = await client.fetch(groq`*[_type == "pageCategory"]{
@@ -97,4 +112,4 @@ export async function getStaticProps(context) {
     },
   };
 }
-export default Post;
+export default Page;
