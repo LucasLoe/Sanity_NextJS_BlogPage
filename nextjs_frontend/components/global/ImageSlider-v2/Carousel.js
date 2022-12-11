@@ -63,17 +63,17 @@ export default function Carousel({ width = "half", images }) {
   );
 
   return (
-    <div className="flex justify-center w-screen md:w-1/2 items-center">
-      <div className="relative w-full ">
-        <div className="carousel inline-flex overflow-hidden snap-x snap-mandatory">
+    <div className="flex justify-center items-center w-full h-full">
+      <div className="relative w-full h-full ">
+        <div className="carousel inline-flex overflow-hidden snap-x snap-mandatory w-full h-full">
           {images &&
             images.map((img, i) => (
               <div
-                className="w-full flex-shrink-0 h-full"
+                className="w-full h-full flex-shrink-0"
                 key={img}
                 ref={refs[i]}
               >
-                <img src={img} className=" object-cover" />
+                <img src={img} className="w-full h-full object-cover" />
               </div>
             ))}
           {sliderControl(true)}
